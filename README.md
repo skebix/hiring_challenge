@@ -57,3 +57,7 @@ Download this repo. Code it your way. Think how would you solve this problem usi
  Please don't submit Pull Requests. After you're done, please send an email to [federico+hiring@workana.com](mailto:federico+hiring@workana.com) with the link to your fork so we can start talking =)
 
 Thanks a lot and happy coding!
+
+## Disclaimer
+
+THIS IS NOT FREE WORK. We have already found a solution to this problem. Your proposal will only be used to evaluate the quality of your work and resourcefulness of your solution.
