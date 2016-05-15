@@ -55,14 +55,13 @@ class EndpointAction
             $friendsListHandler = $this->friendsListHandler;
             $friendsList = $friendsListHandler->getSerializedFriendsList();
 
-            if($friendsList instanceof FriendsList){
+            if ($friendsList instanceof FriendsList) {
                 $friendsList = $friendsListHandler->setFriendsOnline($friendsList);
-            }else{
+            } else {
                 return $friendsList;
             }
 
             $response = $response->withJson($friendsList->toArray());
-
         } catch (\Exception $e) {
             $data = ['error' => true, 'message' => 'Unknown exception. ' . $e->getMessage()];
             $response = $response->withJson($data, 500);
@@ -70,5 +69,4 @@ class EndpointAction
 
         return $response;
     }
-
 }
