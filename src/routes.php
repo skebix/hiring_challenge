@@ -15,25 +15,10 @@ $app->get('/', function ($request, $response, $args) {
     header('Content-Type: application/json; charset=utf-8');
 
     /**
-     * Load .env
-     */
-    $dotenv = new Dotenv\Dotenv(__DIR__ . '/../');
-    $dotenv->load();
-
-    /**
      * Load configuration
      */
     $redisHost = getenv('REDIS_HOST');
     $redisPort = getenv('REDIS_PORT');
-
-    /**
-     * No cookie, no session ID.
-     */
-    if (empty($_COOKIE['app'])) {
-        http_response_code(403);
-        echo json_encode(['error' => true, 'message' => 'Not a valid session.']);
-        exit();
-    }
 
     try {
         // Create a new Redis connection

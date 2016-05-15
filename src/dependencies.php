@@ -7,9 +7,16 @@
  */
 
 use app\middleware\ConfigMiddleware;
+use app\middleware\CookieMiddleware;
 use app\middleware\CorsMiddleware;
 use Dotenv\Dotenv;
 use Slim\Container;
+use Slim\Http\Cookies;
+
+$container['cookie'] = function (Container $container) {
+    $request = $container->request;
+    return new Cookies($request->getCookieParams());
+};
 
 $container['dotenv'] = function (Container $container) {
     $settings = $container->settings['dotenv'];
@@ -24,4 +31,9 @@ $container['app\middleware\ConfigMiddleware'] = function (Container $container) 
 $container['app\middleware\CorsMiddleware'] = function (Container $container) {
     $dotenv = $container->get('dotenv');
     return new CorsMiddleware($dotenv);
+};
+
+$container['app\middleware\CookieMiddleware'] = function (Container $container) {
+    $cookie = $container->get('cookie');
+    return new CookieMiddleware($cookie);
 };
