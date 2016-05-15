@@ -7,6 +7,7 @@
  */
 
 use app\action\EndpointAction;
+use app\domain\chat\FriendsListHandler;
 use app\middleware\ConfigMiddleware;
 use app\middleware\CookieMiddleware;
 use app\middleware\CorsMiddleware;
@@ -43,9 +44,16 @@ $container['redis'] = function (Container $container) {
     return new Redis();
 };
 
+$container['app\domain\chat\FriendsListHandler'] = function (Container $container) {
+    $cookie = $container->get('cookie');
+    $redis = $container->get('redis');
+    return new FriendsListHandler($cookie, $redis, $container->response);
+};
+
 $container['app\action\EndpointAction'] = function (Container $container) {
     $cookie = $container->get('cookie');
     $dotenv = $container->get('dotenv');
+    $friendsListHandler = $container->get('app\domain\chat\FriendsListHandler');
     $redis = $container->get('redis');
-    return new EndpointAction($cookie, $dotenv, $redis);
+    return new EndpointAction($cookie, $dotenv, $friendsListHandler, $redis);
 };

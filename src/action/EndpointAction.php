@@ -9,6 +9,7 @@
 namespace app\action;
 
 use app\domain\chat\FriendsList;
+use app\domain\chat\FriendsListHandler;
 use Dotenv\Dotenv;
 use Redis;
 use Slim\Http\Cookies;
@@ -18,17 +19,16 @@ use Slim\Http\Response;
 class EndpointAction
 {
 
-    const FRIENDS_CACHE_PREFIX_KEY = 'chat:friends:';
-    const ONLINE_CACHE_PREFIX_KEY = 'chat:online:';
-
     protected $cookie;
     protected $dotenv;
+    protected $friendsListHandler;
     protected $redis;
 
-    public function __construct(Cookies $cookie, Dotenv $dotenv, Redis $redis)
+    public function __construct(Cookies $cookie, Dotenv $dotenv, FriendsListHandler $friendsListHandler, Redis $redis)
     {
         $this->cookie = $cookie;
         $this->dotenv = $dotenv;
+        $this->friendsListHandler = $friendsListHandler;
         $this->redis = $redis;
     }
 
@@ -52,10 +52,11 @@ class EndpointAction
 
             $response = $response->withoutHeader('Set-Cookie');
 
-            $friendsList = $this->getSerializedFriendsList($response);
+            $friendsListHandler = $this->friendsListHandler;
+            $friendsList = $friendsListHandler->getSerializedFriendsList();
 
             if($friendsList instanceof FriendsList){
-                $friendsList = $this->setFriendsOnline($friendsList);
+                $friendsList = $friendsListHandler->setFriendsOnline($friendsList);
             }else{
                 return $friendsList;
             }
@@ -70,47 +71,4 @@ class EndpointAction
         return $response;
     }
 
-    public function getSerializedFriendsList(Response $response)
-    {
-        $sessionHash = $this->cookie->get('app');
-        $session = $this->redis->get('PHPREDIS_SESSION:' . $sessionHash);
-
-        if (!empty($session['default']['id'])) {
-            $friendsList = $this->redis->get(self::FRIENDS_CACHE_PREFIX_KEY . $session['default']['id']);
-            if (!$friendsList) {
-                $response = $response->withJson([]);
-                return $response;
-            }
-        } else {
-            $response = $response->withJson(['error' => true, 'message' => 'Friends list not available.'], 404);
-            return $response;
-        }
-
-        return $friendsList;
-    }
-
-    public function setFriendsOnline(FriendsList $friendsList)
-    {
-        $friendUserIds = $friendsList->getUserIds();
-
-        if (!empty($friendUserIds)) {
-            $keys = array_map(function ($userId) {
-                return self::ONLINE_CACHE_PREFIX_KEY . $userId;
-            }, $friendUserIds);
-
-            $result = $this->redis->mget($keys);
-
-            $onlineUsers = array_filter(
-                array_combine(
-                    $friendUserIds,
-                    $result
-                )
-            );
-
-            if ($onlineUsers) {
-                $friendsList->setOnline($onlineUsers);
-            }
-        }
-        return $friendsList;
-    }
 }
