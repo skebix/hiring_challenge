@@ -7,6 +7,7 @@
  */
 
 use app\middleware\ConfigMiddleware;
+use app\middleware\CorsMiddleware;
 use Dotenv\Dotenv;
 use Slim\Container;
 
@@ -18,4 +19,9 @@ $container['dotenv'] = function (Container $container) {
 $container['app\middleware\ConfigMiddleware'] = function (Container $container) {
     $dotenv = $container->get('dotenv');
     return new ConfigMiddleware($dotenv);
+};
+
+$container['app\middleware\CorsMiddleware'] = function (Container $container) {
+    $dotenv = $container->get('dotenv');
+    return new CorsMiddleware($dotenv);
 };

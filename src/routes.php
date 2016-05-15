@@ -25,23 +25,6 @@ $app->get('/', function ($request, $response, $args) {
      */
     $redisHost = getenv('REDIS_HOST');
     $redisPort = getenv('REDIS_PORT');
-    $allowedDomains = explode(',', getenv('ALLOWED_DOMAINS'));
-    $allowBlankReferrer = getenv('ALLOW_BLANK_REFERRER') || false;
-
-    /**
-     * CORS check
-     */
-    $httpOrigin = !empty($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : null;
-    if ($allowBlankReferrer || in_array($httpOrigin, $allowedDomains)) {
-        header('Access-Control-Allow-Credentials: true');
-        if ($httpOrigin) {
-            header("Access-Control-Allow-Origin: $httpOrigin");
-        }
-    } else {
-        http_response_code(403);
-        echo json_encode(['error' => true, 'message' => 'Not a valid origin.']);
-        exit();
-    }
 
     /**
      * No cookie, no session ID.

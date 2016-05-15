@@ -6,4 +6,5 @@
  * Time: 10:02 AM
  */
 
+$app->add(\app\middleware\CorsMiddleware::class);
 $app->add(\app\middleware\ConfigMiddleware::class);
