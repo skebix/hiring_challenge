@@ -6,6 +6,7 @@
  * Time: 10:02 AM
  */
 
+use app\action\EndpointAction;
 use app\middleware\ConfigMiddleware;
 use app\middleware\CookieMiddleware;
 use app\middleware\CorsMiddleware;
@@ -36,4 +37,15 @@ $container['app\middleware\CorsMiddleware'] = function (Container $container) {
 $container['app\middleware\CookieMiddleware'] = function (Container $container) {
     $cookie = $container->get('cookie');
     return new CookieMiddleware($cookie);
+};
+
+$container['redis'] = function (Container $container) {
+    return new Redis();
+};
+
+$container['app\action\EndpointAction'] = function (Container $container) {
+    $cookie = $container->get('cookie');
+    $dotenv = $container->get('dotenv');
+    $redis = $container->get('redis');
+    return new EndpointAction($cookie, $dotenv, $redis);
 };
