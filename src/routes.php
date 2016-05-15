@@ -29,15 +29,6 @@ $app->get('/', function ($request, $response, $args) {
     $allowBlankReferrer = getenv('ALLOW_BLANK_REFERRER') || false;
 
     /**
-     * Check configuration
-     */
-    if (empty($redisHost) || empty($redisPort) || empty($allowedDomains) || !is_array($allowedDomains)) {
-        http_response_code(500);
-        echo json_encode(['error' => true, 'message' => 'Server error, invalid configuration.']);
-        exit();
-    }
-
-    /**
      * CORS check
      */
     $httpOrigin = !empty($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : null;
